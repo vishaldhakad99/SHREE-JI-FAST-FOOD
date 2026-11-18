@@ -6,7 +6,7 @@ services:
     plan: free
     region: singapore
     rootDir: server
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -23,7 +23,7 @@ services:
       - key: COOKIE_SECRET
         generateValue: true
       - key: CLIENT_URL
-        value: https://shreeji-fastfood.onrender.com
+        value: "*"
       - key: INITIAL_ADMIN_EMAIL
         value: admin@shreejifastfood.com
       - key: INITIAL_ADMIN_PASSWORD
