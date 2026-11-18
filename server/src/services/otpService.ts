@@ -73,8 +73,40 @@ export const sendEmailOtp = async (email: string, otp: string, customerName?: st
 
 export const sendSmsOtp = async (phone: string, otp: string): Promise<{ success: boolean; message: string }> => {
   const fast2smsKey = process.env.FAST2SMS_API_KEY;
+  const fast2smsOtpId = process.env.FAST2SMS_OTP_ID;
   const twoFactorKey = process.env.TWO_FACTOR_API_KEY;
 
+  // 1. Try Fast2SMS Smart OTP first if OTP ID is configured
+  if (fast2smsKey && fast2smsOtpId) {
+    try {
+      const response = await fetch('https://www.fast2sms.com/dev/otp/send', {
+        method: 'POST',
+        headers: {
+          authorization: fast2smsKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          otp_id: fast2smsOtpId,
+          mobile: phone,
+          otp: otp,
+          otp_length: 6,
+          otp_expiry: 5,
+        }),
+      });
+      const data = await response.json();
+      console.log(`[OTP] Fast2SMS Smart OTP response:`, data);
+      if (data.return === true || data.status_code === 200) {
+        return { success: true, message: `OTP aapke mobile (+91 ${phone}) par bhej diya gaya hai!` };
+      }
+      if (data.message) {
+        console.warn(`[OTP] Fast2SMS Smart OTP warning:`, data.message);
+      }
+    } catch (err: any) {
+      console.error('[OTP] Fast2SMS Smart OTP error:', err.message);
+    }
+  }
+
+  // 2. Try Fast2SMS Bulk V2 OTP Route
   if (fast2smsKey) {
     try {
       const response = await fetch('https://www.fast2sms.com/dev/bulkV2', {
@@ -90,13 +122,28 @@ export const sendSmsOtp = async (phone: string, otp: string): Promise<{ success:
         }),
       });
       const data = await response.json();
-      console.log(`[OTP] Fast2SMS response:`, data);
+      console.log(`[OTP] Fast2SMS bulkV2 response:`, data);
       if (data.return === true || data.status_code === 200) {
         return { success: true, message: `OTP aapke mobile number (+91 ${phone}) par bhej diya gaya hai.` };
       }
+      
+      const errMsg = Array.isArray(data.message) ? data.message[0] : (data.message || '');
+      // If Fast2SMS asks for OTP ID or Website verification, return clear friendly guidance
+      if (data.status_code === 996) {
+        return {
+          success: false,
+          message: 'Fast2SMS me Website Verification ya Smart OTP ID ki jarurat hai. Fast2SMS dashboard me Smart OTP ka OTP ID copy karein.',
+        };
+      }
+      if (data.status_code === 999) {
+        return {
+          success: false,
+          message: 'Fast2SMS: API use karne ke liye Fast2SMS me verification ya recharge pending hai.',
+        };
+      }
       return {
         success: false,
-        message: Array.isArray(data.message) ? data.message[0] : (data.message || 'Fast2SMS delivery failed'),
+        message: errMsg || 'Fast2SMS SMS delivery me dikkat aayi.',
       };
     } catch (err: any) {
       console.error('[OTP] Fast2SMS error:', err.message);
