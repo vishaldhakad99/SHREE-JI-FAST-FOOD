@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { CustomerAuthProvider } from './context/CustomerAuthContext';
 import { SettingsProvider } from './context/SettingsContext';
+import { CustomerAuthModal } from './components/CustomerAuthModal';
 
 // Layouts
 import { MainLayout } from './layouts/MainLayout';
@@ -28,9 +30,11 @@ import { AdminSettingsManagement } from './pages/admin/AdminSettingsManagement';
 export const App: React.FC = () => {
   return (
     <AuthProvider>
-      <SettingsProvider>
-        <BrowserRouter>
-          <Routes>
+      <CustomerAuthProvider>
+        <SettingsProvider>
+          <BrowserRouter>
+            <CustomerAuthModal />
+            <Routes>
             {/* Customer Facing Website */}
             <Route path="/" element={<MainLayout />}>
               <Route index element={<HomePage />} />
@@ -60,7 +64,8 @@ export const App: React.FC = () => {
           </Routes>
         </BrowserRouter>
       </SettingsProvider>
-    </AuthProvider>
+    </CustomerAuthProvider>
+  </AuthProvider>
   );
 };
 

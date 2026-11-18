@@ -1,7 +1,8 @@
 import React from 'react';
 import { DailyMenuItem } from '../types';
-import { Sparkles, MessageCircle } from 'lucide-react';
+import { Sparkles, MessageCircle, Lock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 interface DailyMenuCardProps {
   item: DailyMenuItem;
@@ -9,6 +10,7 @@ interface DailyMenuCardProps {
 
 export const DailyMenuCard: React.FC<DailyMenuCardProps> = ({ item }) => {
   const { settings } = useSettings();
+  const { isAuthenticated, openAuthModal } = useCustomerAuth();
 
   const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
   const cleanPhone = rawPhone.replace(/[^\d]/g, '');
@@ -70,15 +72,22 @@ export const DailyMenuCard: React.FC<DailyMenuCardProps> = ({ item }) => {
         </span>
 
         {item.isAvailable && (
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => {
+              if (!isAuthenticated) {
+                openAuthModal(() => {
+                  window.open(whatsappUrl, '_blank');
+                });
+              } else {
+                window.open(whatsappUrl, '_blank');
+              }
+            }}
             className="inline-flex items-center gap-1.5 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm transition-colors"
           >
-            <MessageCircle className="w-3.5 h-3.5 fill-current" />
+            {!isAuthenticated ? <Lock className="w-3 h-3 text-white/80" /> : <MessageCircle className="w-3.5 h-3.5 fill-current" />}
             <span>Order</span>
-          </a>
+          </button>
         )}
       </div>
     </div>

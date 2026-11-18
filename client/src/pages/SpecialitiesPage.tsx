@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 import {
   Sparkles,
   CheckCircle2,
@@ -13,6 +14,7 @@ import {
 
 export const SpecialitiesPage: React.FC = () => {
   const { settings } = useSettings();
+  const { isAuthenticated, openAuthModal } = useCustomerAuth();
 
   const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
   const cleanPhone = rawPhone.replace(/[^\d]/g, '');
@@ -164,6 +166,14 @@ export const SpecialitiesPage: React.FC = () => {
 
                   <a
                     href={itemWhatsappUrl}
+                    onClick={(e) => {
+                      if (!isAuthenticated) {
+                        e.preventDefault();
+                        openAuthModal(() => {
+                          window.open(itemWhatsappUrl, '_blank');
+                        });
+                      }
+                    }}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-full transition-colors shadow-sm"

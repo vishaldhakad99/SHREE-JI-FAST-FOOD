@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { FoodItem } from '../types';
 import {
   MessageCircle,
@@ -12,6 +13,7 @@ import {
   Sparkles,
   ShieldCheck,
   ShoppingBag,
+  Lock,
 } from 'lucide-react';
 
 export const CustomOrderPage: React.FC = () => {
@@ -20,12 +22,25 @@ export const CustomOrderPage: React.FC = () => {
   const prefillId = searchParams.get('id') || '';
 
   const { settings } = useSettings();
+  const { customer, isAuthenticated, openAuthModal } = useCustomerAuth();
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
 
   // Form State
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+
+  // Auto-fill from verified customer profile
+  useEffect(() => {
+    if (customer) {
+      if (customer.name && customer.name !== 'Valued Customer') {
+        setCustomerName(customer.name);
+      }
+      if (customer.phone) {
+        setCustomerPhone(customer.phone);
+      }
+    }
+  }, [customer]);
   const [selectedFoodName, setSelectedFoodName] = useState(prefillFood);
   const [selectedFoodId, setSelectedFoodId] = useState(prefillId);
   const [customDishName, setCustomDishName] = useState('');
@@ -98,6 +113,12 @@ export const CustomOrderPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessResponse(null);
+
+    // Gating: Require customer login before placing order
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
 
     // Basic Validation
     if (!customerName.trim() || customerName.trim().length < 2) {
@@ -240,6 +261,44 @@ export const CustomOrderPage: React.FC = () => {
           onSubmit={handleSubmit}
           className="bg-white rounded-3xl p-6 sm:p-10 border border-cream-300 shadow-premium space-y-8"
         >
+          {/* Customer Auth Banner */}
+          {!isAuthenticated ? (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center shrink-0">
+                  <Lock className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-deepbrown-900">
+                    Order karne ke liye pehle Login karein
+                  </h4>
+                  <p className="text-xs text-stone-600">
+                    Mobile Number ya Gmail OTP se 10 second me login karein
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => openAuthModal()}
+                className="w-full sm:w-auto px-4 py-2.5 bg-saffron-600 hover:bg-saffron-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all whitespace-nowrap"
+              >
+                Login / Send OTP
+              </button>
+            </div>
+          ) : (
+            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between gap-2 text-xs text-emerald-800">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>
+                  Verified Customer: <strong>{customer?.name || 'Customer'}</strong> ({customer?.phone ? `+91 ${customer.phone}` : customer?.email})
+                </span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full shrink-0">
+                Active Session
+              </span>
+            </div>
+          )}
+
           {errorMessage && (
             <div className="bg-red-50 border border-red-300 text-red-800 p-4 rounded-xl text-xs sm:text-sm">
               {errorMessage}
@@ -481,8 +540,14 @@ export const CustomOrderPage: React.FC = () => {
               disabled={submitting}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-saffron-600 hover:bg-saffron-700 text-white px-8 py-4 rounded-full text-sm font-bold shadow-lg transition-all hover:shadow-xl disabled:opacity-50"
             >
-              <Send className="w-4 h-4" />
-              <span>{submitting ? 'Submitting Request...' : 'Send Order Inquiry'}</span>
+              {!isAuthenticated ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+              <span>
+                {submitting
+                  ? 'Submitting Request...'
+                  : !isAuthenticated
+                  ? 'Login to Send Order'
+                  : 'Send Order Inquiry'}
+              </span>
             </button>
           </div>
         </form>

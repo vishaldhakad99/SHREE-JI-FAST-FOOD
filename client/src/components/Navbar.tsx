@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { NoticeBanner } from './NoticeBanner';
 import { InstallAppButton } from './InstallAppButton';
 import {
@@ -11,6 +12,8 @@ import {
   MessageCircle,
   Clock,
   ShieldCheck,
+  User,
+  LogOut,
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -18,6 +21,7 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { settings } = useSettings();
+  const { customer, isAuthenticated, openAuthModal, logout } = useCustomerAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -115,6 +119,30 @@ export const Navbar: React.FC = () => {
             <div className="hidden lg:flex items-center gap-2.5">
               <InstallAppButton compact />
 
+              {isAuthenticated ? (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-saffron-50 border border-saffron-200/80 rounded-xl text-xs font-bold text-saffron-900 shadow-sm">
+                  <User className="w-3.5 h-3.5 text-saffron-600" />
+                  <span className="truncate max-w-[120px]">
+                    {customer?.name || (customer?.phone ? `+91 ${customer.phone}` : customer?.email)}
+                  </span>
+                  <button
+                    onClick={logout}
+                    title="Logout"
+                    className="p-1 text-stone-400 hover:text-red-600 hover:bg-saffron-100 rounded-lg transition-colors ml-0.5"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => openAuthModal()}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-saffron-600 hover:bg-saffron-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all hover:scale-105"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Login / OTP</span>
+                </button>
+              )}
+
               <a
                 href={whatsappUrl}
                 target="_blank"
@@ -126,9 +154,27 @@ export const Navbar: React.FC = () => {
               </a>
             </div>
 
-            {/* Mobile Actions: WhatsApp Icon + Desktop App Icon + Hamburger */}
+            {/* Mobile Actions: WhatsApp Icon + Desktop App Icon + User Login + Hamburger */}
             <div className="flex lg:hidden items-center gap-1.5 shrink-0">
               <InstallAppButton compact />
+
+              <button
+                onClick={() => {
+                  if (isAuthenticated) {
+                    setIsOpen(true);
+                  } else {
+                    openAuthModal();
+                  }
+                }}
+                className={`inline-flex items-center justify-center w-9 h-9 rounded-xl text-xs font-bold shadow-sm transition-all ${
+                  isAuthenticated
+                    ? 'bg-saffron-100 text-saffron-800 border border-saffron-300'
+                    : 'bg-saffron-600 text-white'
+                }`}
+                aria-label="Customer Account"
+              >
+                <User className="w-4 h-4" />
+              </button>
 
               <a
                 href={whatsappUrl}
@@ -154,6 +200,48 @@ export const Navbar: React.FC = () => {
         {/* Mobile Menu Drawer */}
         {isOpen && (
           <div className="lg:hidden bg-cream-50 border-t border-cream-200 px-4 pt-3 pb-6 space-y-3 animate-fadeIn shadow-xl max-h-[80vh] overflow-y-auto">
+            {/* Customer Profile / Login Section */}
+            <div className="p-3 bg-stone-100/90 rounded-xl flex items-center justify-between border border-stone-200/80 mb-2">
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-saffron-600 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+                      {customer?.name ? customer.name.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-deepbrown-900 truncate">
+                        {customer?.name || 'Customer'}
+                      </p>
+                      <p className="text-[11px] text-stone-600 truncate">
+                        {customer?.phone ? `+91 ${customer.phone}` : customer?.email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      setIsOpen(false);
+                    }}
+                    className="px-2.5 py-1 text-xs font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    openAuthModal();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2 bg-gradient-to-r from-saffron-600 to-amber-600 text-white text-xs font-bold rounded-lg shadow-sm"
+                >
+                  <User className="w-3.5 h-3.5" />
+                  <span>Login with Mobile / Gmail to Order</span>
+                </button>
+              )}
+            </div>
+
             <div className="space-y-1">
               {navLinks.map((link) => (
                 <Link

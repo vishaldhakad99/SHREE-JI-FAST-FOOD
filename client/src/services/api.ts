@@ -10,9 +10,16 @@ const api = axios.create({
 
 // Attach Authorization Bearer token from localStorage as fallback for cross-domain deployments
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('shreeji_admin_token');
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const adminToken = localStorage.getItem('shreeji_admin_token');
+  const customerToken = localStorage.getItem('shreeji_customer_token');
+  if (config.headers) {
+    if (config.url?.includes('/customer') && customerToken) {
+      config.headers.Authorization = `Bearer ${customerToken}`;
+    } else if (adminToken) {
+      config.headers.Authorization = `Bearer ${adminToken}`;
+    } else if (customerToken) {
+      config.headers.Authorization = `Bearer ${customerToken}`;
+    }
   }
   return config;
 });

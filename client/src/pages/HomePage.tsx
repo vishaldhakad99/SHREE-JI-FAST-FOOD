@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { FoodItem, DailyMenu } from '../types';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { FoodCard } from '../components/FoodCard';
 import { DailyMenuCard } from '../components/DailyMenuCard';
 import {
@@ -22,6 +23,7 @@ import {
 
 export const HomePage: React.FC = () => {
   const { settings } = useSettings();
+  const { isAuthenticated, openAuthModal } = useCustomerAuth();
   const [featuredItems, setFeaturedItems] = useState<FoodItem[]>([]);
   const [dailyMenu, setDailyMenu] = useState<DailyMenu | null>(null);
   const [hasDailyMenu, setHasDailyMenu] = useState(false);
@@ -73,6 +75,15 @@ export const HomePage: React.FC = () => {
     ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to order fresh food.')}`
     : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to order fresh food.')}`;
 
+  const handleWhatsAppClick = (e: React.MouseEvent) => {
+    if (!isAuthenticated) {
+      e.preventDefault();
+      openAuthModal(() => {
+        window.open(whatsappUrl, '_blank');
+      });
+    }
+  };
+
   return (
     <div className="space-y-20 pb-20">
       {/* ================= HERO SECTION ================= */}
@@ -113,6 +124,7 @@ export const HomePage: React.FC = () => {
 
                 <a
                   href={whatsappUrl}
+                  onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-8 py-4 rounded-full text-base font-bold shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
@@ -332,6 +344,7 @@ export const HomePage: React.FC = () => {
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <a
                   href={whatsappUrl}
+                  onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white text-xs font-bold px-5 py-3 rounded-full shadow-sm hover:bg-[#20ba59]"
@@ -487,6 +500,7 @@ export const HomePage: React.FC = () => {
 
                 <a
                   href={whatsappUrl}
+                  onClick={handleWhatsAppClick}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-6 py-3.5 rounded-full text-sm font-bold border border-white/20 transition-colors"

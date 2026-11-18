@@ -14,6 +14,7 @@ import orderRoutes from './routes/order.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import settingsRoutes from './routes/settings.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
+import customerAuthRoutes from './routes/customerAuth.routes.js';
 
 export const createApp = (): Application => {
   const app = express();
@@ -84,6 +85,7 @@ export const createApp = (): Application => {
   app.use('/api/contact', contactRoutes);
   app.use('/api/settings', settingsRoutes);
   app.use('/api/upload', uploadRoutes);
+  app.use('/api/customer', customerAuthRoutes);
 
   // 7. Not Found and Centralized Error Handling
   app.use(notFoundHandler);

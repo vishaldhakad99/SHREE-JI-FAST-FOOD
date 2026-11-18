@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FoodItem } from '../types';
-import { Sparkles, Clock, Flame, MessageCircle, ArrowRight } from 'lucide-react';
+import { Sparkles, Clock, Flame, MessageCircle, ArrowRight, Lock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
+import { useCustomerAuth } from '../context/CustomerAuthContext';
 
 interface FoodCardProps {
   item: FoodItem;
@@ -10,6 +11,8 @@ interface FoodCardProps {
 
 export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
   const { settings } = useSettings();
+  const { isAuthenticated, openAuthModal } = useCustomerAuth();
+  const navigate = useNavigate();
 
   const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
   const cleanPhone = rawPhone.replace(/[^\d]/g, '');
@@ -130,24 +133,41 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
 
       {/* Card Action Buttons */}
       <div className="p-5 pt-0 border-t border-cream-200/80 flex items-center gap-2">
-        <Link
-          to={`/custom-order?food=${encodeURIComponent(item.name)}&id=${item._id}`}
+        <button
+          type="button"
+          onClick={() => {
+            if (!isAuthenticated) {
+              openAuthModal(() => {
+                navigate(`/custom-order?food=${encodeURIComponent(item.name)}&id=${item._id}`);
+              });
+            } else {
+              navigate(`/custom-order?food=${encodeURIComponent(item.name)}&id=${item._id}`);
+            }
+          }}
           className="flex-1 inline-flex items-center justify-center gap-1.5 bg-saffron-50 hover:bg-saffron-100 text-saffron-700 hover:text-saffron-800 text-xs font-bold py-2.5 px-3 rounded-xl border border-saffron-200 transition-colors"
         >
-          <span>Customize</span>
+          {!isAuthenticated && <Lock className="w-3 h-3 text-saffron-500" />}
+          <span>{isAuthenticated ? 'Customize' : 'Order / Customize'}</span>
           <ArrowRight className="w-3 h-3" />
-        </Link>
+        </button>
 
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          type="button"
+          onClick={() => {
+            if (!isAuthenticated) {
+              openAuthModal(() => {
+                window.open(whatsappUrl, '_blank');
+              });
+            } else {
+              window.open(whatsappUrl, '_blank');
+            }
+          }}
           className="inline-flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold py-2.5 px-3 rounded-xl shadow-sm transition-colors"
-          title="Inquire on WhatsApp"
+          title={isAuthenticated ? 'Order on WhatsApp' : 'Login to Order on WhatsApp'}
         >
           <MessageCircle className="w-3.5 h-3.5 fill-current" />
           <span className="hidden sm:inline">WhatsApp</span>
-        </a>
+        </button>
       </div>
     </div>
   );
