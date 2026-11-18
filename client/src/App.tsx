@@ -17,6 +17,7 @@ import { SpecialitiesPage } from './pages/SpecialitiesPage';
 import { CustomOrderPage } from './pages/CustomOrderPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage';
 
 // Admin Pages
 import { AdminLoginPage } from './pages/admin/AdminLoginPage';
@@ -44,6 +45,7 @@ export const App: React.FC = () => {
               <Route path="custom-order" element={<CustomOrderPage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="contact" element={<ContactPage />} />
+              <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
             </Route>
 
             {/* Admin Login */}
