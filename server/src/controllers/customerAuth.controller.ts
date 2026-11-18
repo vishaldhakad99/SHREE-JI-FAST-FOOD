@@ -37,13 +37,26 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
         ? numericPhone.substring(2)
         : numericPhone;
 
+      // 1. Strict Indian Mobile check: must start with 6, 7, 8, 9 and be 10 digits
       if (!/^[6-9]\d{9}$/.test(validPhone)) {
         res.status(400).json({
           success: false,
-          message: 'Please enter a valid 10-digit Indian mobile number',
+          message: 'Galat mobile number! Kripya apna sahi 10-digit Indian mobile number (6, 7, 8, ya 9 se shuru) dalein.',
         });
         return;
       }
+
+      // 2. Reject fake repetitive digits (e.g. 0000000000, 9999999999, 1234567890)
+      const allSame = /^(\d)\1{9}$/.test(validPhone);
+      const isFakeSequential = validPhone === '1234567890' || validPhone === '9876543210';
+      if (allSame || isFakeSequential) {
+        res.status(400).json({
+          success: false,
+          message: 'Yeh invalid/fake mobile number hai! Kripya apna asli active mobile number dalein.',
+        });
+        return;
+      }
+
       cleanIdentifier = validPhone;
     } else {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,9 +85,6 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
       verified: false,
     });
 
-    const isEmailConfigured = !!(process.env.GMAIL_USER || process.env.SMTP_USER || process.env.EMAIL_USER);
-    const isSmsConfigured = !!process.env.FAST2SMS_API_KEY;
-
     let sendResult;
     if (type === 'email') {
       sendResult = await sendEmailOtp(cleanIdentifier, otp, name);
@@ -82,9 +92,17 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
       sendResult = await sendSmsOtp(cleanIdentifier, otp);
     }
 
+    if (!sendResult.success) {
+      res.status(400).json({
+        success: false,
+        message: sendResult.message,
+      });
+      return;
+    }
+
     res.status(200).json({
       success: true,
-      message: type === 'email' ? 'Verification code sent to your Gmail inbox' : 'OTP sent to your mobile number via SMS',
+      message: sendResult.message || (type === 'email' ? 'Verification code sent to your Gmail inbox' : 'OTP sent to your mobile number via SMS'),
       type,
       identifier: cleanIdentifier,
     });

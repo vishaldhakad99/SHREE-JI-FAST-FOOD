@@ -73,6 +73,7 @@ export const sendEmailOtp = async (email: string, otp: string, customerName?: st
 
 export const sendSmsOtp = async (phone: string, otp: string): Promise<{ success: boolean; message: string }> => {
   const fast2smsKey = process.env.FAST2SMS_API_KEY;
+  const twoFactorKey = process.env.TWO_FACTOR_API_KEY;
 
   if (fast2smsKey) {
     try {
@@ -90,13 +91,46 @@ export const sendSmsOtp = async (phone: string, otp: string): Promise<{ success:
       });
       const data = await response.json();
       console.log(`[OTP] Fast2SMS response:`, data);
-      return { success: true, message: 'OTP sent to mobile number via SMS' };
+      if (data.return === true || data.status_code === 200) {
+        return { success: true, message: `OTP aapke mobile number (+91 ${phone}) par bhej diya gaya hai.` };
+      }
+      return {
+        success: false,
+        message: Array.isArray(data.message) ? data.message[0] : (data.message || 'Fast2SMS delivery failed'),
+      };
     } catch (err: any) {
       console.error('[OTP] Fast2SMS error:', err.message);
+      return { success: false, message: 'SMS service connect nahi ho saki. Kripya check karein.' };
     }
   }
 
-  // Fallback / Log
-  console.log(`[OTP] Mobile OTP for ${phone}: ${otp}`);
-  return { success: true, message: `OTP sent to mobile number ${phone}` };
+  if (twoFactorKey) {
+    try {
+      const response = await fetch(`https://2factor.in/API/V1/${twoFactorKey}/SMS/${phone}/${otp}/OTP1`);
+      const data = await response.json();
+      console.log(`[OTP] 2Factor response:`, data);
+      if (data.Status === 'Success') {
+        return { success: true, message: `OTP sent via 2Factor to ${phone}` };
+      }
+      return { success: false, message: data.Details || '2Factor delivery failed' };
+    } catch (err: any) {
+      console.error('[OTP] 2Factor error:', err.message);
+    }
+  }
+
+  // If no SMS provider key is configured in .env yet
+  console.warn(`[SMS ALERT] FAST2SMS_API_KEY missing in .env! Generated OTP for ${phone}: ${otp}`);
+
+  // For restaurant owner testing or development when SMS key is not yet set
+  if (phone === '8839290150' || process.env.NODE_ENV !== 'production') {
+    return {
+      success: true,
+      message: `Render me FAST2SMS_API_KEY add karein real SMS ke liye. Test Code: ${otp}`,
+    };
+  }
+
+  return {
+    success: false,
+    message: 'Mobile SMS Gateway (FAST2SMS_API_KEY) Render me connect nahi hai. Kripya Render me FAST2SMS_API_KEY add karein ya tab tak Gmail se login karein.',
+  };
 };

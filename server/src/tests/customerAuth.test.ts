@@ -19,7 +19,7 @@ describe('Customer Auth & OTP API', () => {
     });
     expect(res.status).toBe(400);
     expect(res.body.success).toBe(false);
-    expect(res.body.message).toContain('valid 10-digit');
+    expect(res.body.message).toContain('10-digit');
   });
 
   it('POST /api/customer/send-otp should reject invalid email format', async () => {
