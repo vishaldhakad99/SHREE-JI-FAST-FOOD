@@ -1,9 +1,12 @@
-const CACHE_NAME = 'shreeji-cache-v1';
+const CACHE_NAME = 'shreeji-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {

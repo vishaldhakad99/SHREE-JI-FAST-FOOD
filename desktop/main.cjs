@@ -9,7 +9,7 @@ function createWindow() {
     minHeight: 600,
     title: 'Shree Ji Fast Food',
     backgroundColor: '#FAF7F2',
-    icon: path.join(__dirname, '../client/public/favicon.svg'),
+    icon: path.join(__dirname, '../client/public/icon-512.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.cjs'),
       nodeIntegration: false,
