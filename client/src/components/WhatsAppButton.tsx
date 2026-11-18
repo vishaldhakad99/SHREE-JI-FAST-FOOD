@@ -1,16 +1,15 @@
 import React from 'react';
 import { useSettings } from '../context/SettingsContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import { MessageCircle } from 'lucide-react';
 
 export const WhatsAppButton: React.FC = () => {
   const { settings } = useSettings();
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food! I would like to inquire about today’s fresh meals and menu.')}`
-    : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food! I would like to inquire about today’s fresh meals and menu.')}`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food! I would like to inquire about today’s fresh meals and menu.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   return (
     <aside aria-label="Customer Support">

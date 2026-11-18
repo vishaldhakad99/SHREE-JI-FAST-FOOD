@@ -17,7 +17,10 @@ export const createOrderEnquiry = async (req: Request, res: Response, next: Next
       }
     }
 
+    const orderNumber = `SJ-${Math.floor(1000 + Math.random() * 9000)}`;
+
     const order = await OrderEnquiry.create({
+      orderNumber,
       customerName: data.customerName,
       customerPhone: data.customerPhone,
       foodItemId: data.foodItemId,
@@ -31,13 +34,14 @@ export const createOrderEnquiry = async (req: Request, res: Response, next: Next
       status: 'new',
     });
 
-    // Fetch restaurant WhatsApp settings to build formatted link
+    // Fetch restaurant WhatsApp settings to build formatted link (Guaranteed fallback to 8839290150)
     const settings = await RestaurantSettings.findOne();
-    const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-    const cleanPhone = rawPhone.replace(/[^\d]/g, '');
+    const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '8839290150';
+    let cleanPhone = rawPhone.replace(/[^\d]/g, '');
+    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
 
     const whatsappMessage = encodeURIComponent(
-      `*New Order Inquiry - Shree Ji Fast Food*\n\n` +
+      `*New Order #${orderNumber} - Shree Ji Fast Food*\n\n` +
       `👤 *Customer Name:* ${data.customerName}\n` +
       `📞 *Phone:* ${data.customerPhone}\n` +
       `🍲 *Requested Item:* ${data.foodItemName}\n` +
@@ -45,19 +49,19 @@ export const createOrderEnquiry = async (req: Request, res: Response, next: Next
       `🚚 *Service:* ${data.deliveryType === 'delivery' ? 'Home Delivery' : 'Self Pickup'}\n` +
       (data.deliveryAddress ? `📍 *Address:* ${data.deliveryAddress}\n` : '') +
       (data.additionalRequirements ? `📝 *Customization / Note:* ${data.additionalRequirements}\n` : '') +
-      `\n_Note: Please confirm item availability and preparation time._`
+      `\n_Order ID: ${orderNumber} | Please confirm availability._`
     );
 
-    const whatsappUrl = cleanPhone.length >= 10
-      ? `https://wa.me/${cleanPhone}?text=${whatsappMessage}`
-      : `https://wa.me/?text=${whatsappMessage}`;
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${whatsappMessage}`;
 
     res.status(201).json({
       success: true,
       message: 'Order inquiry submitted successfully. The restaurant will review and confirm availability.',
       order: {
         id: order._id,
+        orderNumber: order.orderNumber,
         customerName: order.customerName,
+        customerPhone: order.customerPhone,
         foodItemName: order.foodItemName,
         quantity: order.quantity,
         deliveryType: order.deliveryType,
@@ -148,8 +152,12 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
     }
 
     order.status = data.status;
+    order.statusUpdatedAt = new Date();
     if (data.adminNotes !== undefined) {
       order.adminNotes = data.adminNotes;
+    }
+    if ((req.body as any).estimatedTime !== undefined) {
+      order.estimatedTime = (req.body as any).estimatedTime;
     }
 
     await order.save();
@@ -158,6 +166,36 @@ export const updateOrderStatus = async (req: Request, res: Response, next: NextF
       success: true,
       message: `Order status updated to '${data.status}'.`,
       order,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMyOrders = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const phone = req.query.phone as string;
+    if (!phone) {
+      res.status(400).json({ success: false, message: 'Phone number is required' });
+      return;
+    }
+
+    const cleanDigits = phone.replace(/\D/g, '');
+    const shortPhone = cleanDigits.length === 12 && cleanDigits.startsWith('91') ? cleanDigits.substring(2) : cleanDigits;
+
+    const orders = await OrderEnquiry.find({
+      $or: [
+        { customerPhone: cleanDigits },
+        { customerPhone: shortPhone },
+        { customerPhone: { $regex: shortPhone } },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.status(200).json({
+      success: true,
+      orders,
     });
   } catch (error) {
     next(error);

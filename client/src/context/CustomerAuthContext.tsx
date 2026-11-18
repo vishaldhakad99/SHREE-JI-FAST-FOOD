@@ -20,7 +20,7 @@ interface CustomerAuthContextType {
     identifier: string,
     type: 'phone' | 'email',
     name?: string
-  ) => Promise<{ success: boolean; message: string; previewOtp?: string }>;
+  ) => Promise<{ success: boolean; message: string }>;
   verifyOtp: (
     identifier: string,
     otp: string,
@@ -55,11 +55,14 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
           setCustomer(res.data.customer);
           localStorage.setItem('shreeji_customer_user', JSON.stringify(res.data.customer));
         }
-      } catch (err) {
-        // Expired or invalid
-        localStorage.removeItem('shreeji_customer_token');
-        localStorage.removeItem('shreeji_customer_user');
-        setCustomer(null);
+      } catch (err: any) {
+        // STRICT: Only clear if the server explicitly returns a 401 Unauthorized
+        // Never log out the user on network timeout, phone offline, or server cold starts!
+        if (err.response?.status === 401) {
+          localStorage.removeItem('shreeji_customer_token');
+          localStorage.removeItem('shreeji_customer_user');
+          setCustomer(null);
+        }
       } finally {
         setIsLoading(false);
       }
@@ -86,7 +89,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     identifier: string,
     type: 'phone' | 'email',
     name?: string
-  ): Promise<{ success: boolean; message: string; previewOtp?: string }> => {
+  ): Promise<{ success: boolean; message: string }> => {
     try {
       const res = await api.post('/customer/send-otp', {
         identifier,
@@ -96,7 +99,6 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       return {
         success: true,
         message: res.data.message || 'Verification code sent',
-        previewOtp: res.data.previewOtp,
       };
     } catch (err: any) {
       return {

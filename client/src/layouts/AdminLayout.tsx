@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
+import api from '../services/api';
+import {
+  playKitchenOrderBell,
+  sendBrowserNotification,
+  requestNotificationPermission,
+} from '../utils/audioAlerts';
 import {
   LayoutDashboard,
   UtensilsCrossed,
@@ -14,6 +20,8 @@ import {
   X,
   MessageSquare,
   ShieldCheck,
+  Bell,
+  Volume2,
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -22,6 +30,69 @@ export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [newOrderAlert, setNewOrderAlert] = useState<any | null>(null);
+  const knownOrderIds = useRef<Set<string>>(new Set());
+  const initialLoadDone = useRef<boolean>(false);
+
+  // Live real-time order listener with audio chime
+  useEffect(() => {
+    requestNotificationPermission();
+
+    let isMounted = true;
+
+    const checkNewOrders = async () => {
+      try {
+        const res = await api.get('/orders?status=new');
+        if (res.data?.success && isMounted) {
+          const newOrders = res.data.orders || [];
+
+          if (!initialLoadDone.current) {
+            newOrders.forEach((o: any) => knownOrderIds.current.add(o._id));
+            initialLoadDone.current = true;
+            return;
+          }
+
+          // Check if any order is new that we haven't alerted for
+          const brandNew = newOrders.find((o: any) => !knownOrderIds.current.has(o._id));
+
+          if (brandNew) {
+            knownOrderIds.current.add(brandNew._id);
+            setNewOrderAlert(brandNew);
+
+            // 1. Play loud restaurant kitchen order bell
+            playKitchenOrderBell();
+
+            // 2. Trigger native browser push notification
+            sendBrowserNotification('🔔 NEW ORDER RECEIVED!', {
+              body: `New order #${brandNew.orderNumber || ''} from ${brandNew.customerName} for ${brandNew.foodItemName} (Qty: ${brandNew.quantity})`,
+            });
+          }
+        }
+      } catch (err) {
+        // Silently retry on next poll
+      }
+    };
+
+    checkNewOrders();
+    const timer = setInterval(checkNewOrders, 4000);
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const quickAcceptOrder = async (orderId: string) => {
+    try {
+      await api.patch(`/orders/${orderId}/status`, {
+        status: 'accepted',
+        adminNotes: 'Accepted by Kitchen',
+      });
+      setNewOrderAlert(null);
+      window.location.reload();
+    } catch (e) {
+      console.error('Failed to quick accept order:', e);
+    }
+  };
 
   if (loading) {
     return (
@@ -154,7 +225,55 @@ export const AdminLayout: React.FC = () => {
       </aside>
 
       {/* Main Admin Content Body */}
-      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl">
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 max-w-7xl relative">
+        {/* Real-time Order Alert Banner for Admin */}
+        {newOrderAlert && (
+          <div className="fixed top-4 right-4 left-4 md:left-auto md:w-[420px] z-50 bg-gradient-to-r from-red-600 via-saffron-600 to-amber-600 text-white p-4 rounded-2xl shadow-2xl border-2 border-white/50 animate-bounce">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl animate-spin">🔔</span>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded">
+                    NEW ORDER RECEIVED!
+                  </span>
+                  <h4 className="font-bold text-sm mt-1">
+                    #{newOrderAlert.orderNumber || ''} • {newOrderAlert.customerName} ({newOrderAlert.customerPhone})
+                  </h4>
+                  <p className="text-xs font-semibold text-yellow-100 mt-0.5">
+                    🍲 {newOrderAlert.foodItemName} (Qty: {newOrderAlert.quantity})
+                  </p>
+                  {newOrderAlert.deliveryAddress && (
+                    <p className="text-[11px] text-white/80 truncate max-w-[280px]">
+                      📍 {newOrderAlert.deliveryAddress}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setNewOrderAlert(null)}
+                className="p-1.5 hover:bg-white/20 rounded-full text-white/80 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="mt-3 pt-2 border-t border-white/20 flex gap-2">
+              <button
+                onClick={() => quickAcceptOrder(newOrderAlert._id)}
+                className="flex-1 py-2 bg-white text-emerald-800 font-black text-xs rounded-xl shadow hover:bg-cream-100 transition-colors"
+              >
+                ✓ Accept Order Now
+              </button>
+              <Link
+                to="/admin/dashboard/orders"
+                onClick={() => setNewOrderAlert(null)}
+                className="px-4 py-2 bg-black/30 hover:bg-black/50 text-white font-bold text-xs rounded-xl transition-colors"
+              >
+                View Order
+              </Link>
+            </div>
+          </div>
+        )}
+
         <Outlet />
       </main>
     </div>

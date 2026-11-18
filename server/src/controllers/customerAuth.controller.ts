@@ -82,15 +82,11 @@ export const sendCustomerOtp = async (req: Request, res: Response): Promise<void
       sendResult = await sendSmsOtp(cleanIdentifier, otp);
     }
 
-    // If service not fully set up in .env yet, return previewOtp so testing works smoothly
-    const shouldProvidePreview = (type === 'email' && !isEmailConfigured) || (type === 'phone' && !isSmsConfigured);
-
     res.status(200).json({
       success: true,
-      message: type === 'email' ? 'Verification code sent to your Gmail' : 'OTP sent to your mobile number',
+      message: type === 'email' ? 'Verification code sent to your Gmail inbox' : 'OTP sent to your mobile number via SMS',
       type,
       identifier: cleanIdentifier,
-      ...(shouldProvidePreview ? { previewOtp: otp } : {}),
     });
   } catch (error: any) {
     console.error('Error in sendCustomerOtp:', error);
@@ -177,7 +173,7 @@ export const verifyCustomerOtp = async (req: Request, res: Response): Promise<vo
       }
     }
 
-    // Sign JWT Token
+    // Sign Permanent Customer JWT Token (10 years)
     const secret = getJwtSecret();
     const token = jwt.sign(
       {
@@ -186,14 +182,14 @@ export const verifyCustomerOtp = async (req: Request, res: Response): Promise<vo
         name: customer.name,
       },
       secret,
-      { expiresIn: '30d' } as any
+      { expiresIn: '3650d' } as any
     );
 
     res.cookie('customer_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
+      maxAge: 3650 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({

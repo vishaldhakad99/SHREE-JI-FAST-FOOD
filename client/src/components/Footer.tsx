@@ -2,16 +2,16 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { UtensilsCrossed, Phone, MapPin, Clock, MessageCircle, ShieldCheck, Heart } from 'lucide-react';
+import { getWhatsAppUrl, DEFAULT_WHATSAPP_NUMBER } from '../utils/whatsapp';
 
 export const Footer: React.FC = () => {
   const { settings } = useSettings();
 
   const currentYear = new Date().getFullYear();
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}`
-    : `https://wa.me/`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, I would like to inquire about your food menu and ordering.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   return (
     <footer className="bg-deepbrown-950 text-cream-200 pt-16 pb-8 border-t-4 border-saffron-600">
@@ -115,7 +115,7 @@ export const Footer: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-xs text-[#25D366] hover:underline"
                 >
-                  WhatsApp: {settings?.whatsappNumber || 'Available'}
+                  WhatsApp: {settings?.whatsappNumber || DEFAULT_WHATSAPP_NUMBER}
                 </a>
               </li>
               <li className="flex items-start gap-3">

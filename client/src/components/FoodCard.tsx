@@ -4,6 +4,7 @@ import { FoodItem } from '../types';
 import { Sparkles, Clock, Flame, MessageCircle, ArrowRight, Lock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 
 interface FoodCardProps {
   item: FoodItem;
@@ -14,16 +15,10 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
   const { isAuthenticated, openAuthModal } = useCustomerAuth();
   const navigate = useNavigate();
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-
-  const whatsappMessage = encodeURIComponent(
-    `Hello Shree Ji Fast Food! I would like to order / inquire about: *${item.name}* (Price: ₹${item.price}). Is it currently ready?`
+  const whatsappUrl = getWhatsAppUrl(
+    `Hello Shree Ji Fast Food! I would like to order / inquire about: *${item.name}* (Price: ₹${item.price}). Is it currently ready?`,
+    settings?.whatsappNumber || settings?.phoneNumber
   );
-
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${whatsappMessage}`
-    : `https://wa.me/?text=${whatsappMessage}`;
 
   return (
     <div

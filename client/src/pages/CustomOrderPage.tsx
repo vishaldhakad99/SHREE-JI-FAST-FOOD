@@ -169,6 +169,7 @@ export const CustomOrderPage: React.FC = () => {
       const res = await api.post('/orders', payload);
 
       if (res.data?.success) {
+        localStorage.setItem('shreeji_last_order_phone', customerPhone.trim());
         setSuccessResponse(res.data);
       } else {
         setErrorMessage(res.data?.message || 'Failed to submit order enquiry.');

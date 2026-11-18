@@ -4,6 +4,7 @@ import { useSettings } from '../context/SettingsContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
 import { NoticeBanner } from './NoticeBanner';
 import { InstallAppButton } from './InstallAppButton';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   Menu,
   X,
@@ -50,11 +51,10 @@ export const Navbar: React.FC = () => {
     { name: 'Contact', path: '/contact' },
   ];
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to inquire about ordering food.')}`
-    : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to inquire about ordering food.')}`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, I would like to inquire about ordering food.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;

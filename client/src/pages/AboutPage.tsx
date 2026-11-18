@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   UtensilsCrossed,
   Heart,
@@ -15,11 +16,10 @@ import {
 export const AboutPage: React.FC = () => {
   const { settings } = useSettings();
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}`
-    : `https://wa.me/`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, I would like to learn more about your restaurant and food menu.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-16">

@@ -3,6 +3,7 @@ import { DailyMenuItem } from '../types';
 import { Sparkles, MessageCircle, Lock } from 'lucide-react';
 import { useSettings } from '../context/SettingsContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 
 interface DailyMenuCardProps {
   item: DailyMenuItem;
@@ -12,16 +13,10 @@ export const DailyMenuCard: React.FC<DailyMenuCardProps> = ({ item }) => {
   const { settings } = useSettings();
   const { isAuthenticated, openAuthModal } = useCustomerAuth();
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-
-  const whatsappMessage = encodeURIComponent(
-    `Hello Shree Ji Fast Food! I would like to order from Today's Special Menu: *${item.name}* (Price: ₹${item.price}). Please let me know how soon it will be ready!`
+  const whatsappUrl = getWhatsAppUrl(
+    `Hello Shree Ji Fast Food! I would like to order from Today's Special Menu: *${item.name}* (Price: ₹${item.price}). Please let me know how soon it will be ready!`,
+    settings?.whatsappNumber || settings?.phoneNumber
   );
-
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${whatsappMessage}`
-    : `https://wa.me/?text=${whatsappMessage}`;
 
   return (
     <div className="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">

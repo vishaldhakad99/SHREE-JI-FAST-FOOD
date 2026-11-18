@@ -4,6 +4,7 @@ export type OrderStatus = 'new' | 'contacted' | 'accepted' | 'rejected' | 'compl
 export type DeliveryType = 'pickup' | 'delivery';
 
 export interface IOrderEnquiry extends Document {
+  orderNumber?: string;
   customerName: string;
   customerPhone: string;
   foodItemId?: Types.ObjectId;
@@ -15,6 +16,8 @@ export interface IOrderEnquiry extends Document {
   estimatedPrice?: number;
   status: OrderStatus;
   adminNotes?: string;
+  estimatedTime?: string;
+  statusUpdatedAt?: Date;
   source: 'website_form' | 'whatsapp_intent';
   createdAt: Date;
   updatedAt: Date;
@@ -22,6 +25,11 @@ export interface IOrderEnquiry extends Document {
 
 const orderEnquirySchema = new Schema<IOrderEnquiry>(
   {
+    orderNumber: {
+      type: String,
+      trim: true,
+      index: true,
+    },
     customerName: {
       type: String,
       required: [true, 'Customer name is required'],
@@ -83,6 +91,13 @@ const orderEnquirySchema = new Schema<IOrderEnquiry>(
       type: String,
       trim: true,
       maxlength: [1000, 'Admin notes cannot exceed 1000 characters'],
+    },
+    estimatedTime: {
+      type: String,
+      trim: true,
+    },
+    statusUpdatedAt: {
+      type: Date,
     },
     source: {
       type: String,

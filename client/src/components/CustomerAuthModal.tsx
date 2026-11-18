@@ -24,7 +24,6 @@ export const CustomerAuthModal: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [previewOtp, setPreviewOtp] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(30);
 
   // Reset modal state whenever opened
@@ -34,7 +33,6 @@ export const CustomerAuthModal: React.FC = () => {
       setOtp('');
       setError(null);
       setInfoMessage(null);
-      setPreviewOtp(null);
       setResendTimer(30);
     }
   }, [isAuthModalOpen]);
@@ -84,9 +82,6 @@ export const CustomerAuthModal: React.FC = () => {
       setStep('verify');
       setResendTimer(30);
       setInfoMessage(res.message);
-      if (res.previewOtp) {
-        setPreviewOtp(res.previewOtp);
-      }
     } else {
       setError(res.message);
     }
@@ -158,25 +153,6 @@ export const CustomerAuthModal: React.FC = () => {
             <div className="mb-4 p-3 bg-amber-50 border border-amber-200 text-amber-800 text-xs rounded-xl flex items-start gap-2">
               <span className="font-bold">✓</span>
               <span className="flex-1 leading-snug">{infoMessage}</span>
-            </div>
-          )}
-
-          {/* Test / Demo OTP Banner (Helper for testing) */}
-          {previewOtp && (
-            <div className="mb-4 p-3 bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs rounded-xl flex items-center justify-between">
-              <div>
-                <span className="font-bold block">Testing / Demo OTP:</span>
-                <span className="font-mono font-black text-base text-emerald-700 tracking-wider">
-                  {previewOtp}
-                </span>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOtp(previewOtp)}
-                className="px-2.5 py-1 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm"
-              >
-                Auto Fill
-              </button>
             </div>
           )}
 

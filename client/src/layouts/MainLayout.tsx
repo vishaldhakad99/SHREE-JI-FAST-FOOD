@@ -4,6 +4,7 @@ import { Navbar } from '../components/Navbar';
 import { Footer } from '../components/Footer';
 import { WhatsAppButton } from '../components/WhatsAppButton';
 import { ScrollToTop } from '../components/ScrollToTop';
+import { CustomerOrderNotificationTracker } from '../components/CustomerOrderNotificationTracker';
 
 export const MainLayout: React.FC = () => {
   return (
@@ -15,6 +16,7 @@ export const MainLayout: React.FC = () => {
       <Footer />
       <WhatsAppButton />
       <ScrollToTop />
+      <CustomerOrderNotificationTracker />
     </div>
   );
 };

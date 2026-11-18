@@ -4,6 +4,7 @@ import api from '../services/api';
 import { FoodItem, DailyMenu } from '../types';
 import { useSettings } from '../context/SettingsContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import { FoodCard } from '../components/FoodCard';
 import { DailyMenuCard } from '../components/DailyMenuCard';
 import {
@@ -69,11 +70,10 @@ export const HomePage: React.FC = () => {
     fetchFeatured();
   }, []);
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to order fresh food.')}`
-    : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food, I would like to order fresh food.')}`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, I would like to order fresh food.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   const handleWhatsAppClick = (e: React.MouseEvent) => {
     if (!isAuthenticated) {

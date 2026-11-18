@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../services/api';
 import { useSettings } from '../context/SettingsContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   Phone,
   MapPin,
@@ -25,11 +26,10 @@ export const ContactPage: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food, I have an inquiry.')}`
-    : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food, I have an inquiry.')}`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, I have an inquiry.',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,8 +136,8 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <strong className="block text-deepbrown-900 font-bold mb-0.5">WhatsApp Orders</strong>
-                  <p className="text-deepbrown-muted mb-1">
-                    {settings?.whatsappNumber || 'WhatsApp editable in Admin Settings'}
+                  <p className="text-deepbrown-muted mb-1 font-semibold">
+                    {settings?.whatsappNumber ? `+91 ${settings.whatsappNumber}` : '+91 8839290150'}
                   </p>
                   <a
                     href={whatsappUrl}

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useSettings } from '../context/SettingsContext';
 import { useCustomerAuth } from '../context/CustomerAuthContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   Sparkles,
   CheckCircle2,
@@ -96,9 +97,10 @@ export const SpecialitiesPage: React.FC = () => {
       <div className="space-y-16">
         {specialities.map((item, index) => {
           const isReversed = index % 2 !== 0;
-          const itemWhatsappUrl = cleanPhone.length >= 10
-            ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(`Hello Shree Ji Fast Food, I would like to inquire about ordering your speciality: *${item.title}*.`)}`
-            : `https://wa.me/?text=${encodeURIComponent(`Hello Shree Ji Fast Food, I would like to inquire about ordering your speciality: *${item.title}*.`)}`;
+          const itemWhatsappUrl = getWhatsAppUrl(
+            `Hello Shree Ji Fast Food, I would like to inquire about ordering your speciality: *${item.title}*.`,
+            settings?.whatsappNumber || settings?.phoneNumber
+          );
 
           return (
             <div

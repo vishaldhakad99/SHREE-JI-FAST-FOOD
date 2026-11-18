@@ -4,6 +4,7 @@ import api from '../services/api';
 import { DailyMenu } from '../types';
 import { DailyMenuCard } from '../components/DailyMenuCard';
 import { useSettings } from '../context/SettingsContext';
+import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   Calendar,
   Sparkles,
@@ -57,11 +58,10 @@ export const TodaysSpecialPage: React.FC = () => {
     fetchDailyMenu();
   }, []);
 
-  const rawPhone = settings?.whatsappNumber || settings?.phoneNumber || '';
-  const cleanPhone = rawPhone.replace(/[^\d]/g, '');
-  const whatsappUrl = cleanPhone.length >= 10
-    ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent('Hello Shree Ji Fast Food, please let me know what special items are prepared today!')}`
-    : `https://wa.me/?text=${encodeURIComponent('Hello Shree Ji Fast Food, please let me know what special items are prepared today!')}`;
+  const whatsappUrl = getWhatsAppUrl(
+    'Hello Shree Ji Fast Food, please let me know what special items are prepared today!',
+    settings?.whatsappNumber || settings?.phoneNumber
+  );
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-12">
