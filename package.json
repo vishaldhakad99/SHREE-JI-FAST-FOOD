@@ -1,0 +1,25 @@
+{
+  "name": "shreeji-fastfood-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Shree Ji Fast Food – Premium Restaurant Website & Management System",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "npm run build:server && npm run build:client",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "test": "cd server && npm test",
+    "seed:admin": "cd server && npm run seed:admin",
+    "seed:sample": "cd server && npm run seed:sample",
+    "desktop:dev": "concurrently \"npm run dev\" \"electron desktop/main.cjs\"",
+    "desktop": "electron desktop/main.cjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^34.2.0"
+  }
+}

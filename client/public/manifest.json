@@ -1,0 +1,38 @@
+{
+  "name": "Shree Ji Fast Food",
+  "short_name": "Shree Ji",
+  "description": "Ghar Jaisa Swad, Har Din Kuch Khaas! Fresh daily meals, special thalis, and famous parathas.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FAF7F2",
+  "theme_color": "#E65100",
+  "categories": ["food", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Today's Special",
+      "url": "/todays-special",
+      "description": "View today's fresh daily specials"
+    },
+    {
+      "name": "Our Menu",
+      "url": "/menu",
+      "description": "Explore the full food menu"
+    },
+    {
+      "name": "Custom Food Order",
+      "url": "/custom-order",
+      "description": "Request customized meal preparation"
+    }
+  ]
+}
