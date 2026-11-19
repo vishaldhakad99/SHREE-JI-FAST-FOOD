@@ -97,7 +97,7 @@ export const HomePage: React.FC = () => {
             {/* Left Column: Brand & Taglines */}
             <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
               <div className="inline-flex items-center gap-2 bg-saffron-50 border border-saffron-200 px-4 py-1.5 rounded-full text-saffron-700 text-xs sm:text-sm font-bold shadow-sm">
-                <Sparkles className="w-4 h-4 text-warmamber-500 fill-warmamber-400 animate-spin" />
+                <Sparkles className="w-4 h-4 text-warmamber-500 fill-warmamber-400" />
                 <span>100% Pure Vegetarian & Daily Fresh Meals</span>
               </div>
 
@@ -158,12 +158,13 @@ export const HomePage: React.FC = () => {
                   <img
                     src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=1000&auto=format&fit=crop"
                     alt="Famous Aloo Paratha Shree Ji Fast Food"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   
                   {/* Floating Highlight Card */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-lg border border-cream-200">
+                  <div className="absolute bottom-4 left-4 right-4 bg-white p-3.5 sm:p-4 rounded-2xl shadow-lg border border-cream-200">
                     <div className="flex items-center justify-between gap-2">
                       <div className="min-w-0">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-saffron-600 block">
@@ -249,15 +250,17 @@ export const HomePage: React.FC = () => {
           ].map((item, idx) => (
             <div
               key={idx}
-              className="group bg-white rounded-2xl overflow-hidden border border-cream-300 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col"
+              className="group bg-white rounded-2xl overflow-hidden border border-cream-300 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col specialty-card-render"
             >
               <div className="h-40 overflow-hidden relative">
                 <img
                   src={item.img}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-black/75 backdrop-blur-sm text-white px-2 py-0.5 rounded-full">
+                <span className="absolute top-2.5 right-2.5 text-[10px] font-bold bg-black/80 text-white px-2 py-0.5 rounded-full">
                   {item.tag}
                 </span>
               </div>

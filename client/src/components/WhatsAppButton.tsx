@@ -17,11 +17,11 @@ export const WhatsAppButton: React.FC = () => {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-4 py-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 group font-medium"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-4 py-3 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 group font-medium gpu-accelerated"
         title="Chat on WhatsApp"
         aria-label="Order on WhatsApp"
       >
-        <MessageCircle className="w-6 h-6 fill-current text-white animate-pulse" />
+        <MessageCircle className="w-6 h-6 fill-current text-white group-hover:scale-110 transition-transform" />
         <span className="hidden sm:inline text-sm font-semibold tracking-wide">
           Order on WhatsApp
         </span>

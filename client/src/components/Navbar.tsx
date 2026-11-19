@@ -25,13 +25,19 @@ export const Navbar: React.FC = () => {
   const { customer, isAuthenticated, openAuthModal, logout } = useCustomerAuth();
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      if (window.scrollY > 15) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 20;
+          setIsScrolled((prev) => (prev !== scrolled ? scrolled : prev));
+          ticking = false;
+        });
+        ticking = true;
       }
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -63,15 +69,15 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full transition-shadow duration-300">
+    <header className="sticky top-0 z-40 w-full transition-shadow duration-200 gpu-accelerated">
       {/* Notice Banner directly inside sticky header to prevent any vertical jump/jitter */}
       <NoticeBanner />
 
       <div
-        className={`w-full transition-all duration-300 ${
+        className={`w-full transition-colors duration-200 ${
           isScrolled
-            ? 'bg-cream-50/98 backdrop-blur-md shadow-md border-b border-cream-300/80'
-            : 'bg-cream-50/95 backdrop-blur-sm border-b border-cream-300/60'
+            ? 'bg-[#FDFCF9] shadow-md border-b border-cream-300'
+            : 'bg-[#FDFCF9] border-b border-cream-200'
         }`}
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">

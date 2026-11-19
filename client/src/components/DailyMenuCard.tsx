@@ -19,7 +19,7 @@ export const DailyMenuCard: React.FC<DailyMenuCardProps> = ({ item }) => {
   );
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+    <div className="bg-white rounded-2xl p-5 border border-amber-200/80 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between group relative overflow-hidden food-card-render">
       {/* Decorative Warm Accent bar */}
       <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-saffron-500 to-warmamber-500" />
 

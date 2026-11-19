@@ -68,7 +68,13 @@ export const CustomerOrderNotificationTracker: React.FC = () => {
           const active = fetchedOrders.filter(
             (o) => o.status === 'new' || o.status === 'contacted' || o.status === 'accepted'
           );
-          setActiveOrders(active);
+
+          // Only trigger state updates if orders actually changed to avoid scroll re-renders
+          setActiveOrders((prev) => {
+            if (prev.length !== active.length) return active;
+            const hasChanged = active.some((o, i) => o._id !== prev[i]._id || o.status !== prev[i].status || o.estimatedTime !== prev[i].estimatedTime);
+            return hasChanged ? active : prev;
+          });
 
           // Detect status transitions
           fetchedOrders.forEach((order) => {

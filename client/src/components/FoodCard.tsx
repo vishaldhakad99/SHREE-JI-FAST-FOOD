@@ -22,7 +22,7 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
 
   return (
     <div
-      className={`group bg-white rounded-2xl overflow-hidden border border-cream-300 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between ${
+      className={`group bg-white rounded-2xl overflow-hidden border border-cream-300 shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between food-card-render ${
         !item.isAvailable ? 'opacity-70 bg-cream-50' : ''
       }`}
     >
@@ -33,7 +33,8 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
             src={item.imageUrl || 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?q=80&w=800&auto=format&fit=crop'}
             alt={item.name}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            decoding="async"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
@@ -41,14 +42,14 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
           {/* Top Left Indicators: Pure Veg Badge & Category */}
           <div className="absolute top-3 left-3 flex items-center gap-2">
             {/* Indian Green Veg Icon */}
-            <div className="bg-white/95 backdrop-blur-sm p-1 rounded border border-gray-200 shadow-sm" title="100% Pure Vegetarian">
+            <div className="bg-white p-1 rounded border border-gray-200 shadow-sm" title="100% Pure Vegetarian">
               <div className="w-3.5 h-3.5 border-2 border-emerald-600 flex items-center justify-center">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
               </div>
             </div>
 
             {item.isSpecial && (
-              <span className="inline-flex items-center gap-1 bg-amber-500/95 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1 bg-amber-500 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm">
                 <Sparkles className="w-3 h-3 fill-current" />
                 Special
               </span>
@@ -58,7 +59,7 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
           {/* Top Right: Today's Special or Availability Badge */}
           <div className="absolute top-3 right-3 flex flex-col items-end gap-1.5">
             {item.isTodaysSpecial && (
-              <span className="bg-saffron-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-md animate-pulse">
+              <span className="bg-saffron-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-md">
                 Today's Special
               </span>
             )}
@@ -72,13 +73,13 @@ export const FoodCard: React.FC<FoodCardProps> = ({ item }) => {
 
           {/* Bottom Overlay Price Tag */}
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white">
-            <div className="bg-black/70 backdrop-blur-md px-3 py-1 rounded-lg border border-white/20">
+            <div className="bg-black/80 px-3 py-1 rounded-lg border border-white/20">
               <span className="text-xs text-amber-300 font-medium">Price: </span>
               <span className="text-lg font-black tracking-tight text-white">₹{item.price}</span>
             </div>
 
             {item.preparationTimeMinutes && (
-              <div className="flex items-center gap-1 text-[11px] bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-md">
+              <div className="flex items-center gap-1 text-[11px] bg-black/70 px-2.5 py-1 rounded-md">
                 <Clock className="w-3 h-3 text-amber-300" />
                 <span>~{item.preparationTimeMinutes} mins</span>
               </div>
