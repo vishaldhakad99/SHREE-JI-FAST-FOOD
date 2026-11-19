@@ -17,7 +17,6 @@
 9. [Render Deployment Guide](#-render-deployment-guide)
 10. [Security Implementation](#-security-implementation)
 
----
 
 ## 🌟 Overview & Highlights
 Shree Ji Fast Food is a production-ready, database-driven Indian restaurant platform featuring:
@@ -255,6 +254,8 @@ npm test
    - Environment variable: `VITE_API_URL=https://<your-backend-service>.onrender.com/api`
 
 ---
+
+
 
 ## 🛡 Security Implementation
 - **Zero Hardcoded Secrets**: Secrets loaded exclusively via environment variables.
