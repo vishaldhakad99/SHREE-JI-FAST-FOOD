@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+    <title>Shree Ji Fast Food | Ghar Jaisa Swad, Har Din Kuch Khaas</title>
+    <meta name="description" content="Freshly prepared daily meals, special thalis, puri sabji, and famous aloo parathas made fresh daily to your taste and preference at Shree Ji Fast Food." />
+    <meta property="og:title" content="Shree Ji Fast Food - Fresh Daily Meals & Famous Parathas" />
+    <meta property="og:description" content="Ghar Jaisa Swad, Har Din Kuch Khaas. Fresh daily meals, special thali, puri sabji, and customized food." />
+    <meta property="og:type" content="restaurant.restaurant" />
+    
+    <!-- PWA & Desktop App Capabilities -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#E65100" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Shree Ji Fast Food" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..800;1,400..800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-2nhOrj3r.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BDsSyGMt.css">
+  </head>
+  <body class="bg-cream-100 text-deepbrown-900 font-sans selection:bg-saffron-100 selection:text-saffron-800 antialiased min-h-screen">
+    <div id="root"></div>
+    <script>
+      // Register Service Worker for PWA / Desktop App Install
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.log('SW registration error:', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

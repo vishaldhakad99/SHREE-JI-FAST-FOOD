@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Saffron to Amber Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E65100"/>
+      <stop offset="50%" stop-color="#F4511E"/>
+      <stop offset="100%" stop-color="#FFA000"/>
+    </linearGradient>
+
+    <!-- Inner Plate Rich Crimson-Orange Gradient -->
+    <linearGradient id="innerPlate" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BF360C"/>
+      <stop offset="100%" stop-color="#E65100"/>
+    </linearGradient>
+
+    <!-- Luxury Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="50%" stop-color="#FFD54F"/>
+      <stop offset="100%" stop-color="#FFB300"/>
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Background Rounded Square/Full Bleed -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+
+  <!-- 2. Outer Decorative Gold Ring -->
+  <circle cx="256" cy="256" r="222" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.85"/>
+  <circle cx="256" cy="256" r="214" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+
+  <!-- 3. Central Plate / Badge -->
+  <circle cx="256" cy="256" r="190" fill="url(#innerPlate)" stroke="url(#goldGrad)" stroke-width="6" filter="url(#shadow)"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#FFE082" stroke-width="2" stroke-dasharray="3 5" opacity="0.7"/>
+
+  <!-- 4. Steam / Sparkles above Utensils -->
+  <circle cx="256" cy="115" r="5" fill="#FFE082"/>
+  <circle cx="230" cy="125" r="3.5" fill="#FFD54F" opacity="0.8"/>
+  <circle cx="282" cy="122" r="4" fill="#FFD54F" opacity="0.85"/>
+
+  <!-- 5. Crossed Fork & Spoon (UtensilsCrossed) -->
+  <g transform="translate(256, 195)">
+    <!-- FORK (rotated -28 deg) -->
+    <g transform="rotate(-28)">
+      <!-- Handle -->
+      <path d="M 0 10 L 0 75" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="0" cy="76" r="5" fill="#FFFFFF"/>
+      <!-- Neck & Head -->
+      <path d="M -15 -18 C -15 -3 15 -3 15 -18 L 13 -25 L -13 -25 Z" fill="#FFFFFF"/>
+      <!-- Tines -->
+      <path d="M -12 -22 L -12 -58" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M -4 -25 L -4 -63" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M 4 -25 L 4 -63" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M 12 -22 L 12 -58" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round"/>
+    </g>
+
+    <!-- SPOON (rotated +28 deg) -->
+    <g transform="rotate(28)">
+      <!-- Handle -->
+      <path d="M 0 10 L 0 75" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+      <circle cx="0" cy="76" r="5" fill="#FFFFFF"/>
+      <!-- Bowl -->
+      <ellipse cx="0" cy="-42" rx="18" ry="26" fill="#FFFFFF"/>
+      <ellipse cx="0" cy="-40" rx="13" ry="20" fill="#E65100" opacity="0.25"/>
+    </g>
+
+    <!-- Center Gold Ribbon Ring -->
+    <circle cx="0" cy="14" r="10" fill="url(#goldGrad)"/>
+    <circle cx="0" cy="14" r="5" fill="#E65100"/>
+  </g>
+
+  <!-- 6. Brand Typography: SHREE JI -->
+  <text x="256" y="325" text-anchor="middle" font-family="Georgia, serif" font-weight="900" font-size="44" fill="#FFFFFF" letter-spacing="4" filter="url(#shadow)">
+    SHREE JI
+  </text>
+
+  <!-- Decorative Gold Lines & Stars -->
+  <line x1="90" y1="346" x2="165" y2="346" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="168" cy="346" r="3.5" fill="url(#goldGrad)"/>
+  
+  <line x1="347" y1="346" x2="422" y2="346" stroke="url(#goldGrad)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="344" cy="346" r="3.5" fill="url(#goldGrad)"/>
+
+  <!-- Subtitle: FAST FOOD -->
+  <text x="256" y="354" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="800" font-size="20" fill="url(#goldGrad)" letter-spacing="7">
+    FAST FOOD
+  </text>
+
+  <!-- Tagline: GHAR JAISA SWAD -->
+  <text x="256" y="388" text-anchor="middle" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-weight="700" font-size="13" fill="#FFE0B2" letter-spacing="3">
+    GHAR JAISA SWAD
+  </text>
+</svg>

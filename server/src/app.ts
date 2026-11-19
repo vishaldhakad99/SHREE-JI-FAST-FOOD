@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
+import path from 'path';
+import fs from 'fs';
 
 import { globalLimiter } from './middleware/rateLimiter.js';
 import { errorHandler, notFoundHandler } from './middleware/error.middleware.js';
@@ -86,6 +88,31 @@ export const createApp = (): Application => {
   app.use('/api/settings', settingsRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/customer', customerAuthRoutes);
+
+  // 6.5. Serve Frontend static files (PWA manifest, service worker, icons & SPA client)
+  const possibleStaticPaths = [
+    path.resolve(__dirname, '../public'),
+    path.resolve(__dirname, '../../client/dist'),
+    path.resolve(__dirname, '../../../client/dist'),
+  ];
+
+  const staticDir = possibleStaticPaths.find((p) => fs.existsSync(p));
+
+  if (staticDir) {
+    app.use(express.static(staticDir));
+
+    // Handle client-side SPA routing (all non-API routes serve index.html)
+    app.get('*', (req: Request, res: Response, next) => {
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      const indexPath = path.join(staticDir, 'index.html');
+      if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+      }
+      next();
+    });
+  }
 
   // 7. Not Found and Centralized Error Handling
   app.use(notFoundHandler);
