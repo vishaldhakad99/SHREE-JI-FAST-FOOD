@@ -4,21 +4,28 @@ import { useSettings } from '../context/SettingsContext';
 import { getWhatsAppUrl } from '../utils/whatsapp';
 import {
   Phone,
+  
   MapPin,
+  
   Clock,
   MessageCircle,
   Mail,
   Send,
+  
   CheckCircle2,
   AlertCircle,
+  
 } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
   const { settings } = useSettings();
 
   const [name, setName] = useState('');
+  
   const [email, setEmail] = useState('');
+  
   const [phone, setPhone] = useState('');
+  
   const [subject, setSubject] = useState('General Food Inquiry');
   const [message, setMessage] = useState('');
 
